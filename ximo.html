@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ruta Ximo · Aguallena</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:#f0f2f5;color:#111827;min-height:100vh;padding-bottom:40px;}
+.hdr{background:#1d4ed8;color:white;padding:14px 16px 18px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(29,78,216,.3);}
+.ht{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.htitle{font-size:18px;font-weight:700;}
+.hdate{font-size:11px;opacity:.75;font-family:monospace;}
+.pw{background:rgba(255,255,255,.2);border-radius:99px;height:6px;margin-bottom:8px;}
+#xp{background:#fff;border-radius:99px;height:6px;width:0%;transition:width .5s;}
+.ps{display:flex;justify-content:space-between;font-size:12px;opacity:.85;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;background:#fff;border-bottom:1px solid #e4e7ec;}
+.stat{text-align:center;padding:8px 4px;}
+.sv{font-size:20px;font-weight:700;color:#1d4ed8;font-family:monospace;line-height:1;}
+.sl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;margin-top:3px;}
+.sec{padding:14px 16px 6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;}
+.zona{padding:12px 16px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1d4ed8;}
+.card{margin:0 12px 10px;background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e4e7ec;overflow:hidden;}
+.card.del{opacity:.55;border-color:#16a34a;}.card.nr{border-color:#dc2626;}.card.si{border-color:#f59e0b;}
+.cardh{display:flex;align-items:center;gap:12px;padding:14px 14px 10px;}
+.num{background:#1d4ed8;color:white;font-family:monospace;font-size:14px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.del .num{background:#16a34a;}.nr .num{background:#dc2626;}.si .num{background:#f59e0b;}
+.info{flex:1;min-width:0;}
+.name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.addr{font-size:12px;color:#6b7280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cobr{font-family:monospace;font-size:14px;font-weight:500;color:#16a34a;white-space:nowrap;flex-shrink:0;}
+.prods{margin:0 14px 10px;padding:8px 10px;background:#f7f8fa;border-radius:8px;font-size:12px;}
+.obs{margin:0 14px 8px;padding:5px 10px;background:#fff7ed;border-left:3px solid #ea580c;border-radius:6px;font-size:12px;font-weight:600;color:#9a3412;}
+.badge{display:block;margin:0 14px 8px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+.bdel{background:#f0fdf4;color:#16a34a;}.bnr{background:#fee2e2;color:#dc2626;}.bsi{background:#fffbeb;color:#92400e;}
+.undo{font-weight:400;font-size:11px;cursor:pointer;color:#6b7280;margin-left:8px;}
+.acts{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:#e4e7ec;border-top:1px solid #e4e7ec;}
+.abtn{padding:11px 6px;background:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#111827;touch-action:manipulation;user-select:none;-webkit-user-select:none;font-family:'DM Sans',sans-serif;}
+.ai{font-size:16px;}
+.amaps{color:#1d4ed8;}.acall{color:#16a34a;}.aconf{color:#ea580c;}.anrsp{color:#dc2626;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end;justify-content:center;}
+.modal.show{display:flex;}
+.mbox{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;}
+.mtitle{font-size:16px;font-weight:700;margin-bottom:4px;text-align:center;}
+.msub{font-size:13px;color:#6b7280;text-align:center;margin-bottom:8px;}
+.mamt{font-family:monospace;font-size:28px;font-weight:700;color:#16a34a;text-align:center;margin-bottom:20px;}
+.pbtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+.pbtn{padding:14px 8px;border-radius:12px;border:2px solid #e4e7ec;background:#f7f8fa;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;color:#111827;touch-action:manipulation;user-select:none;-webkit-user-select:none;font-family:'DM Sans',sans-serif;}
+.pi{font-size:24px;}
+.mcancel{width:100%;padding:12px;background:none;border:none;font-size:14px;color:#6b7280;cursor:pointer;touch-action:manipulation;font-family:'DM Sans',sans-serif;}
+.complete{display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center;}
+.complete.show{display:flex;}
+.loading{text-align:center;padding:60px 20px;color:#6b7280;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="ht"><div class="htitle">💧 Aguallena · Ruta</div><div class="hdate" id="xfecha">—</div></div>
+  <div class="pw"><div id="xp"></div></div>
+  <div class="ps"><span><strong id="xdone">0</strong> entregadas</span><span><strong id="xpend">—</strong> pendientes</span><span><strong id="xpct">0%</strong> completado</span></div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="sv" id="xnp">—</div><div class="sl">Paradas</div></div>
+  <div class="stat"><div class="sv" id="xcob">0€</div><div class="sl">Cobrado</div></div>
+  <div class="stat"><div class="sv" id="xtot">—</div><div class="sl">Total ruta</div></div>
+</div>
+<div class="sec">📍 Paradas de hoy</div>
+<div id="xlista"><div class="loading">Cargando ruta...</div></div>
+<div class="complete" id="xcomplete">
+  <div style="font-size:64px;margin-bottom:16px">🎉</div>
+  <div style="font-size:24px;font-weight:700;margin-bottom:8px">¡Ruta completada!</div>
+  <div style="color:#6b7280">Buen trabajo, Ximo.</div>
+</div>
+<div class="modal" id="xmodal">
+  <div class="mbox">
+    <div class="mtitle">¿Cómo se ha pagado?</div>
+    <div class="msub" id="xmname"></div>
+    <div class="mamt" id="xmamt"></div>
+    <div class="pbtns">
+      <button class="pbtn" id="xbef"><span class="pi">💵</span><span>Efectivo</span></button>
+      <button class="pbtn" id="xbtar"><span class="pi">💳</span><span>Tarjeta</span></button>
+      <button class="pbtn" id="xbpag"><span class="pi">✅</span><span>Ya pagado</span></button>
+    </div>
+    <button class="mcancel" id="xbcan">Cancelar</button>
+  </div>
+</div>
+<script>
+var FB='https://aguallena-rutas-default-rtdb.europe-west1.firebasedatabase.app';
+var stops=[],delivered=[],pagos=[],horas=[],noResp=[],pendingIdx=-1;
+function fmt(n){return(n||0).toFixed(2).replace('.',',')+'€';}
+function fmtH(iso){if(!iso)return'';return new Date(iso).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});}
+function g(id){return document.getElementById(id);}
+function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+function getMun(a){a=(a||'').toLowerCase();if(/alzira|guadassuar/.test(a))return'r';if(/alfafar/.test(a))return'a';if(/sedav/.test(a))return'se';if(/catarroja/.test(a))return'c';if(/albal/.test(a))return'al';if(/paiporta/.test(a))return'p';if(/bétera|betera/.test(a))return'b';if(/llíria|liria/.test(a))return'l';return'v';}
+function calcStats(){
+  var done=delivered.filter(Boolean).length,noEnt=noResp.filter(function(n){return n===99;}).length,total=stops.length;
+  var cob=stops.reduce(function(s,p,i){return delivered[i]?s+p.cobrar:s;},0);
+  var tot=stops.reduce(function(s,p){return s+p.cobrar;},0);
+  var pct=total>0?Math.round((done+noEnt)/total*100):0;
+  g('xp').style.width=pct+'%';g('xdone').textContent=done;g('xpend').textContent=total-done-noEnt;g('xpct').textContent=pct+'%';
+  g('xnp').textContent=total;g('xcob').textContent=fmt(cob);g('xtot').textContent=fmt(tot);
+  if(done+noEnt===total&&total>0){g('xlista').style.display='none';g('xcomplete').classList.add('show');fbSave();}
+}
+function render(){
+  var lista=g('xlista');lista.innerHTML='';var lastZ='';
+  stops.forEach(function(s,idx){
+    if(s.zona&&s.zona!==lastZ){lista.appendChild(mk('div','zona',s.zona));lastZ=s.zona;}
+    var isDel=delivered[idx],isNR=noResp[idx]===1,isDef=noResp[idx]===99;
+    var card=mk('div','card'+(isDel?' del':isDef?' nr':isNR?' si':''));card.id='c'+idx;
+    var h=mk('div','cardh');var num=mk('div','num',isDel?'✓':String(idx+1));
+    var info=mk('div','info');info.appendChild(mk('div','name',s.name));info.appendChild(mk('div','addr',s.addr));
+    h.appendChild(num);h.appendChild(info);h.appendChild(mk('div','cobr',fmt(s.cobrar)));card.appendChild(h);
+    card.appendChild(mk('div','prods','📦 '+(s.productos||s.notes||'—')));
+    if(s.obs)card.appendChild(mk('div','obs','⚠️ '+s.obs));
+    if(isDel){var bg=mk('div','badge bdel');var pt=pagos[idx]==='efectivo'?'💵 Efectivo':pagos[idx]==='tarjeta'?'💳 Tarjeta':'✅ Ya pagado';bg.textContent='✅ '+pt+' · '+fmtH(horas[idx]);var ud=mk('span','undo','Deshacer');ud.dataset.undo=idx;bg.appendChild(ud);card.appendChild(bg);}
+    else if(isDef)card.appendChild(mk('div','badge bnr','❌ No entregado'));
+    else if(isNR)card.appendChild(mk('div','badge bsi','⚠️ 2º intento'));
+    if(!isDel&&!isDef){
+      var acts=mk('div','acts');
+      [{c:'abtn amaps',i:'🗺️',t:'Navegar',a:'maps'},{c:'abtn acall',i:'📞',t:'Llamar',a:'call'},{c:'abtn aconf',i:'⭕',t:'Confirmar',a:'conf'},{c:'abtn anrsp',i:isNR?'❌':'📵',t:isNR?'No entregado':'No responde',a:'nrsp'}
+      ].forEach(function(b){var btn=mk('button',b.c);btn.dataset.idx=idx;btn.dataset.act=b.a;btn.appendChild(mk('span','ai',b.i));btn.appendChild(mk('span','',b.t));acts.appendChild(btn);});
+      card.appendChild(acts);
+    }
+    lista.appendChild(card);
+  });
+}
+g('xlista').addEventListener('touchstart',function(e){var btn=e.target.closest('[data-act]'),ud=e.target.closest('[data-undo]');if(btn){e.preventDefault();doAct(+btn.dataset.idx,btn.dataset.act);}if(ud){e.preventDefault();doUndo(+ud.dataset.undo);}},{passive:false});
+g('xlista').addEventListener('click',function(e){var btn=e.target.closest('[data-act]'),ud=e.target.closest('[data-undo]');if(btn)doAct(+btn.dataset.idx,btn.dataset.act);if(ud)doUndo(+ud.dataset.undo);});
+function doUndo(i){delivered[i]=false;pagos[i]=null;horas[i]=null;render();calcStats();fbSave();}
+function doAct(idx,act){
+  if(act==='maps')window.open('https://maps.google.com/?q='+encodeURIComponent(stops[idx].addr),'_blank');
+  else if(act==='call')window.location='tel:'+stops[idx].phone;
+  else if(act==='conf')openModal(idx);
+  else if(act==='nrsp')doNoresp(idx);
+}
+function openModal(idx){pendingIdx=idx;g('xmname').textContent=stops[idx].name;g('xmamt').textContent=fmt(stops[idx].cobrar);g('xmodal').classList.add('show');}
+function closeModal(){g('xmodal').classList.remove('show');}
+function confirmPago(tipo){var idx=pendingIdx;if(idx<0)return;closeModal();delivered[idx]=true;pagos[idx]=tipo;horas[idx]=new Date().toISOString();pendingIdx=-1;render();calcStats();fbSave();setTimeout(function(){var next=delivered.findIndex(function(d,i){return !d&&noResp[i]<99;});if(next>-1){var e=g('c'+next);if(e)e.scrollIntoView({behavior:'smooth',block:'center'});}},300);}
+['xbef','xbtar','xbpag'].forEach(function(id){var tipo=id==='xbef'?'efectivo':id==='xbtar'?'tarjeta':'pagado';g(id).addEventListener('touchstart',function(e){e.preventDefault();confirmPago(tipo);},{passive:false});g(id).addEventListener('click',function(){confirmPago(tipo);});});
+g('xbcan').addEventListener('touchstart',function(e){e.preventDefault();closeModal();},{passive:false});
+g('xbcan').addEventListener('click',closeModal);
+g('xmodal').addEventListener('touchstart',function(e){if(e.target===this){e.preventDefault();closeModal();}},{passive:false});
+g('xmodal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+function doNoresp(idx){
+  if(noResp[idx]===1){noResp[idx]=99;render();calcStats();fbSave();return;}
+  noResp[idx]=1;var mun=getMun(stops[idx].addr),dest=-1;
+  for(var i=idx+1;i<stops.length;i++){if(!delivered[i]&&noResp[i]<99&&getMun(stops[i].addr)===mun)dest=i;}
+  if(dest===-1)dest=stops.length-1;
+  var s=stops.splice(idx,1)[0],d=delivered.splice(idx,1)[0],p=pagos.splice(idx,1)[0],h=horas.splice(idx,1)[0],n=noResp.splice(idx,1)[0];
+  var ins=dest>idx?dest:dest+1;stops.splice(ins,0,s);delivered.splice(ins,0,d);pagos.splice(ins,0,p);horas.splice(ins,0,h);noResp.splice(ins,0,n);
+  render();calcStats();fbSave();
+}
+function fbSave(){
+  var pd=stops.map(function(s,i){return{name:s.name,addr:s.addr,cobrar:s.cobrar,productos:s.productos||s.notes||'',entregado:delivered[i]||false,noEntregado:noResp[i]===99,pago:pagos[i]||null,hora:horas[i]||null,obs:s.obs||'',zona:s.zona||''};});
+  var done=delivered.filter(Boolean).length,noEnt=noResp.filter(function(n){return n===99;}).length,tEf=0,tTar=0,tPag=0,tCob=0;
+  stops.forEach(function(s,i){if(delivered[i]){tCob+=s.cobrar;if(pagos[i]==='efectivo')tEf+=s.cobrar;else if(pagos[i]==='tarjeta')tTar+=s.cobrar;else tPag+=s.cobrar;}});
+  var data={paradaActual:done,total:stops.length,entregadas:done,noEntregadas:noEnt,fecha:new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'}),fechaISO:new Date().toISOString().slice(0,10),activa:true,ultimaActualizacion:new Date().toISOString(),totalCobrado:tCob,totEfectivo:tEf,totTarjeta:tTar,totPagado:tPag,paradas:pd};
+  fetch(FB+'/ruta.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){});
+  fetch(FB+'/historial/'+new Date().toISOString().slice(0,10)+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){});
+}
+function load(){
+  fetch(FB+'/ruta.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){
+    if(!d||d.activa===false||!d.paradas||!d.paradas.length){g('xlista').innerHTML='<div class="loading">No hay ruta activa.<br>Cuando Iván genere la ruta aparecerá aquí.</div>';return;}
+    stops=d.paradas;delivered=stops.map(function(s){return s.entregado||false;});pagos=stops.map(function(s){return s.pago||null;});horas=stops.map(function(s){return s.hora||null;});noResp=stops.map(function(s){return s.noEntregado?99:0;});
+    g('xfecha').textContent=new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+    render();calcStats();
+  }).catch(function(){g('xlista').innerHTML='<div class="loading" style="color:#dc2626">Error de conexión.</div>';});
+}
+load();
+</script>
+</body>
+</html>
