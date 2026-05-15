@@ -118,7 +118,15 @@ function render(){
     else if(isNR)card.appendChild(mk('div','badge bsi','⚠️ 2º intento'));
     if(!isDel&&!isDef){
       var acts=mk('div','acts');
-      [{c:'abtn amaps',i:'🗺️',t:'Navegar',a:'maps'},{c:'abtn acall',i:'📞',t:'Llamar',a:'call'},{c:'abtn aconf',i:'⭕',t:'Confirmar',a:'conf'},{c:'abtn anrsp',i:isNR?'❌':'📵',t:isNR?'No entregado':'No responde',a:'nrsp'}
+      var mapsUrl='https://maps.google.com/?q='+encodeURIComponent(stops[idx].addr);
+      // Navegar — usar <a> para que iOS Safari lo abra sin bloquear popups
+      var aMap=document.createElement('a');
+      aMap.href=mapsUrl; aMap.target='_blank'; aMap.rel='noopener';
+      aMap.className='abtn amaps'; aMap.style.textDecoration='none';
+      aMap.appendChild(mk('span','ai','\uD83D\uDDFA\uFE0F')); aMap.appendChild(mk('span','','Navegar'));
+      acts.appendChild(aMap);
+      // Resto de botones
+      [{c:'abtn acall',i:'\uD83D\uDCDE',t:'Llamar',a:'call'},{c:'abtn aconf',i:'\u2B55',t:'Confirmar',a:'conf'},{c:'abtn anrsp',i:isNR?'\u274C':'\uD83D\uDCF5',t:isNR?'No entregado':'No responde',a:'nrsp'}
       ].forEach(function(b){var btn=mk('button',b.c);btn.dataset.idx=idx;btn.dataset.act=b.a;btn.appendChild(mk('span','ai',b.i));btn.appendChild(mk('span','',b.t));acts.appendChild(btn);});
       card.appendChild(acts);
     }
