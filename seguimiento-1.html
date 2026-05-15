@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Seguimiento · Aguallena</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:#f0f4ff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 16px 48px;}
+.logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
+.logo-txt{font-size:20px;font-weight:800;color:#1d4ed8;}
+.card{background:white;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,0.08);padding:32px 24px;width:100%;max-width:400px;text-align:center;}
+.state-idle .icon{font-size:56px;margin-bottom:16px;display:block;}
+.state-idle h2{font-size:20px;font-weight:700;color:#111827;margin-bottom:8px;}
+.state-idle p{font-size:14px;color:#6b7280;line-height:1.6;}
+.state-active{display:none;}
+.truck{font-size:48px;animation:bounce 1s infinite alternate;margin-bottom:8px;display:block;}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.parada-label{font-size:13px;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.parada-num{font-size:64px;font-weight:800;color:#1d4ed8;font-family:'DM Mono',monospace;line-height:1;margin-bottom:4px;display:block;}
+.parada-de{font-size:16px;color:#9ca3af;margin-bottom:24px;display:block;}
+.prog-wrap{background:#e5e7eb;border-radius:99px;height:10px;margin-bottom:24px;overflow:hidden;}
+.prog-fill{background:linear-gradient(90deg,#1d4ed8,#3b82f6);height:10px;border-radius:99px;transition:width .6s;}
+.mi-pedido-wrap{background:#f0fdf4;border:2px solid #16a34a;border-radius:14px;padding:16px;margin-bottom:20px;display:none;}
+.mi-pedido-label{font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:700;}
+.mi-pedido-num{font-size:36px;font-weight:800;color:#16a34a;font-family:'DM Mono',monospace;line-height:1;margin-bottom:2px;display:block;}
+.mi-pedido-estado{font-size:13px;color:#166534;}
+.tiempo-wrap{background:#eff6ff;border-radius:12px;padding:14px;margin-bottom:20px;display:none;}
+.tiempo-label{font-size:12px;color:#1d4ed8;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:4px;}
+.tiempo-val{font-size:28px;font-weight:800;color:#1d4ed8;font-family:'DM Mono',monospace;display:block;}
+.tiempo-sub{font-size:12px;color:#6b7280;margin-top:2px;}
+.updated{font-size:11px;color:#d1d5db;margin-top:16px;}
+.selector-wrap{margin-top:24px;padding-top:20px;border-top:1px solid #f3f4f6;}
+.selector-label{font-size:12px;color:#9ca3af;margin-bottom:8px;}
+.selector-input{display:flex;gap:8px;justify-content:center;align-items:center;}
+.selector-input input{width:80px;padding:8px 12px;border:2px solid #e5e7eb;border-radius:8px;font-family:'DM Mono',monospace;font-size:18px;font-weight:700;text-align:center;color:#111827;outline:none;}
+.selector-input input:focus{border-color:#1d4ed8;}
+.selector-btn{padding:8px 16px;background:#1d4ed8;color:white;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <img src="https://agua-llena.com/wp-content/uploads/2024/05/Aguallena-logo-trans.png" style="height:36px;" onerror="this.style.display='none'" alt="">
+  <span class="logo-txt">Aguallena</span>
+</div>
+
+<div class="card">
+  <div class="state-idle" id="stateIdle">
+    <span class="icon">&#x1F4A7;</span>
+    <h2>Hoy no hay reparto activo</h2>
+    <p>Cuando tu pedido est&#233; en camino, esta p&#225;gina se actualizar&#225; autom&#225;ticamente.</p>
+  </div>
+
+  <div class="state-active" id="stateActive">
+    <span class="truck">&#x1F69A;</span>
+    <div class="parada-label">Ximo va por la parada</div>
+    <span class="parada-num" id="paradaActual">&#8212;</span>
+    <span class="parada-de" id="paradaDe">de &#8212; entregas</span>
+    <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="mi-pedido-wrap" id="miPedidoWrap">
+      <div class="mi-pedido-label">Tu pedido es el n&#186;</div>
+      <span class="mi-pedido-num" id="miPedidoNum">&#8212;</span>
+      <div class="mi-pedido-estado" id="miPedidoEstado"></div>
+    </div>
+    <div class="tiempo-wrap" id="tiempoWrap">
+      <div class="tiempo-label">&#x23F1;&#xFE0F; Tiempo estimado</div>
+      <span class="tiempo-val" id="tiempoVal">&#8212;</span>
+      <div class="tiempo-sub" id="tiempoSub">~20 min por parada</div>
+    </div>
+    <div class="updated" id="updatedAt"></div>
+    <div class="selector-wrap" id="selectorWrap">
+      <div class="selector-label">&#191;Cu&#225;l es tu n&#250;mero de pedido?</div>
+      <div class="selector-input">
+        <input type="number" id="miNumInput" min="1" placeholder="Ej: 8">
+        <button class="selector-btn" onclick="setMiNumero()">Ver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var FB_URL = 'https://aguallena-rutas-default-rtdb.europe-west1.firebasedatabase.app/ruta.json';
+var MINS = 8;
+var AG_TRAVEL = {
+  ribera:{ribera:5,lliria:35,betera:40,alfafar:25,sedavi:22,catarroja:20,albal:18,paiporta:20,valencia:30},
+  lliria:{ribera:35,lliria:5,betera:20,alfafar:35,sedavi:38,catarroja:37,albal:40,paiporta:38,valencia:30},
+  betera:{ribera:40,lliria:20,betera:5,alfafar:25,sedavi:28,catarroja:27,albal:30,paiporta:28,valencia:22},
+  alfafar:{ribera:25,lliria:35,betera:25,alfafar:4,sedavi:5,catarroja:7,albal:10,paiporta:8,valencia:12},
+  sedavi:{ribera:22,lliria:38,betera:28,alfafar:5,sedavi:4,catarroja:6,albal:9,paiporta:7,valencia:14},
+  catarroja:{ribera:20,lliria:37,betera:27,alfafar:7,sedavi:6,catarroja:4,albal:6,paiporta:7,valencia:13},
+  albal:{ribera:18,lliria:40,betera:30,alfafar:10,sedavi:9,catarroja:6,albal:4,paiporta:9,valencia:15},
+  paiporta:{ribera:20,lliria:38,betera:28,alfafar:8,sedavi:7,catarroja:7,albal:9,paiporta:4,valencia:10},
+  valencia:{ribera:30,lliria:30,betera:22,alfafar:12,sedavi:14,catarroja:13,albal:15,paiporta:10,valencia:6}
+};
+
+function getZona(addr){
+  var a=(addr||'').toLowerCase();
+  if(/alzira|guadassuar/.test(a))return'ribera';
+  if(/ll\u00edria|liria/.test(a))return'lliria';
+  if(/b\u00e9tera|betera/.test(a))return'betera';
+  if(/alfafar/.test(a))return'alfafar';
+  if(/sedav/.test(a))return'sedavi';
+  if(/catarroja/.test(a))return'catarroja';
+  if(/albal/.test(a))return'albal';
+  if(/paiporta/.test(a))return'paiporta';
+  return'valencia';
+}
+
+function calcTiempo(paradas, actual, miNum){
+  if(!paradas||!paradas.length) return (miNum-actual-1)*(MINS+8);
+  var t=0;
+  for(var i=actual;i<miNum-1&&i<paradas.length-1;i++){
+    var zA=getZona(paradas[i]?paradas[i].addr:'');
+    var zB=getZona(paradas[i+1]?paradas[i+1].addr:'');
+    t+=MINS+(AG_TRAVEL[zA]&&AG_TRAVEL[zA][zB]?AG_TRAVEL[zA][zB]:10);
+  }
+  return Math.max(t,0);
+}
+
+function fmtTiempo(m){
+  if(m<=0)return 'Pr\u00f3ximo!';
+  if(m<60)return m+' min';
+  return Math.floor(m/60)+'h '+(m%60>0?m%60+'min':'');
+}
+
+var params = new URLSearchParams(window.location.search);
+var miNumero = params.get('pedido') ? parseInt(params.get('pedido')) : parseInt(localStorage.getItem('ag_miNumero'))||null;
+if(miNumero) localStorage.setItem('ag_miNumero', miNumero);
+if(params.get('pedido')) document.getElementById('selectorWrap').style.display='none';
+
+function setMiNumero(){
+  var v=parseInt(document.getElementById('miNumInput').value);
+  if(v>0){miNumero=v;localStorage.setItem('ag_miNumero',v);actualizarUI(window._lastData);}
+}
+
+function actualizarUI(data){
+  window._lastData=data;
+  var idle=document.getElementById('stateIdle');
+  var active=document.getElementById('stateActive');
+
+  if(!data||!data.activa){
+    idle.style.display='block';active.style.display='none';return;
+  }
+
+  idle.style.display='none';active.style.display='block';
+
+  var actual=data.paradaActual||0,total=data.total||0;
+  var pct=total>0?Math.round(actual/total*100):0;
+  document.getElementById('paradaActual').textContent=actual;
+  document.getElementById('paradaDe').textContent='de '+total+' entregas';
+  document.getElementById('progFill').style.width=pct+'%';
+
+  if(miNumero){
+    document.getElementById('miNumInput').value=miNumero;
+    document.getElementById('miPedidoWrap').style.display='block';
+    document.getElementById('tiempoWrap').style.display='block';
+    document.getElementById('miPedidoNum').textContent=miNumero;
+    if(miNumero<=actual){
+      document.getElementById('miPedidoEstado').textContent='\u2705 Tu pedido ya fue entregado';
+      document.getElementById('tiempoVal').textContent='\u00a1Entregado!';
+      document.getElementById('tiempoSub').textContent='';
+    } else {
+      var faltan=miNumero-actual;
+      document.getElementById('miPedidoEstado').textContent='Faltan '+faltan+' parada'+(faltan>1?'s':'')+' para la tuya';
+      var paradas=data.paradas||[];
+      var mins=calcTiempo(paradas,actual,miNumero);
+      document.getElementById('tiempoVal').textContent=fmtTiempo(mins);
+      if(paradas.length>0&&paradas[actual]){
+        var zA=getZona(paradas[actual].addr);
+        var zM=paradas[miNumero-1]?getZona(paradas[miNumero-1].addr):'';
+        document.getElementById('tiempoSub').textContent=zA===zM?'Ximo est\u00e1 en tu zona':'Ximo llega desde '+zA.charAt(0).toUpperCase()+zA.slice(1);
+      }
+    }
+  }
+
+  if(data.ultimaActualizacion){
+    var d=new Date(data.ultimaActualizacion);
+    document.getElementById('updatedAt').textContent='Actualizado a las '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  }
+}
+
+function fetchEstado(){
+  fetch(FB_URL+'?t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(d){actualizarUI(d);})
+    .catch(function(){});
+}
+
+fetchEstado();
+setInterval(fetchEstado,30000);
+</script>
+</body>
+</html>
