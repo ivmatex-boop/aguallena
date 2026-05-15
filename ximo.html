@@ -119,13 +119,10 @@ function render(){
     if(!isDel&&!isDef){
       var acts=mk('div','acts');
       var mapsUrl='https://maps.google.com/?q='+encodeURIComponent(stops[idx].addr);
-      // Navegar — usar <a> para que iOS Safari lo abra sin bloquear popups
-      var aMap=document.createElement('a');
-      aMap.href=mapsUrl; aMap.target='_blank'; aMap.rel='noopener';
-      aMap.className='abtn amaps'; aMap.style.textDecoration='none';
+      var aMap=mk('button','abtn amaps');
+      aMap.dataset.idx=idx; aMap.dataset.act='maps'; aMap.dataset.maps=mapsUrl;
       aMap.appendChild(mk('span','ai','\uD83D\uDDFA\uFE0F')); aMap.appendChild(mk('span','','Navegar'));
       acts.appendChild(aMap);
-      // Resto de botones
       [{c:'abtn acall',i:'\uD83D\uDCDE',t:'Llamar',a:'call'},{c:'abtn aconf',i:'\u2B55',t:'Confirmar',a:'conf'},{c:'abtn anrsp',i:isNR?'\u274C':'\uD83D\uDCF5',t:isNR?'No entregado':'No responde',a:'nrsp'}
       ].forEach(function(b){var btn=mk('button',b.c);btn.dataset.idx=idx;btn.dataset.act=b.a;btn.appendChild(mk('span','ai',b.i));btn.appendChild(mk('span','',b.t));acts.appendChild(btn);});
       card.appendChild(acts);
@@ -137,10 +134,10 @@ g('xlista').addEventListener('touchstart',function(e){var btn=e.target.closest('
 g('xlista').addEventListener('click',function(e){var btn=e.target.closest('[data-act]'),ud=e.target.closest('[data-undo]');if(btn)doAct(+btn.dataset.idx,btn.dataset.act);if(ud)doUndo(+ud.dataset.undo);});
 function doUndo(i){delivered[i]=false;pagos[i]=null;horas[i]=null;render();calcStats();fbSave();}
 function doAct(idx,act){
-  if(act==='maps')window.open('https://maps.google.com/?q='+encodeURIComponent(stops[idx].addr),'_blank');
-  else if(act==='call')window.location='tel:'+stops[idx].phone;
-  else if(act==='conf')openModal(idx);
-  else if(act==='nrsp')doNoresp(idx);
+  if(act==='maps') window.location.href='https://maps.google.com/?q='+encodeURIComponent(stops[idx].addr);
+  else if(act==='call') window.location.href='tel:'+stops[idx].phone;
+  else if(act==='conf') openModal(idx);
+  else if(act==='nrsp') doNoresp(idx);
 }
 function openModal(idx){pendingIdx=idx;g('xmname').textContent=stops[idx].name;g('xmamt').textContent=fmt(stops[idx].cobrar);g('xmodal').classList.add('show');}
 function closeModal(){g('xmodal').classList.remove('show');}
