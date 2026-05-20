@@ -130,7 +130,19 @@ function render(){
     lista.appendChild(card);
   });
 }
-g('xlista').addEventListener('touchstart',function(e){var btn=e.target.closest('[data-act]'),ud=e.target.closest('[data-undo]');if(btn){e.preventDefault();doAct(+btn.dataset.idx,btn.dataset.act);}if(ud){e.preventDefault();doUndo(+ud.dataset.undo);}},{passive:false});
+var touchStartX=0,touchStartY=0;
+g('xlista').addEventListener('touchstart',function(e){
+  touchStartX=e.touches[0].clientX;
+  touchStartY=e.touches[0].clientY;
+},{passive:true});
+g('xlista').addEventListener('touchend',function(e){
+  var dx=Math.abs(e.changedTouches[0].clientX-touchStartX);
+  var dy=Math.abs(e.changedTouches[0].clientY-touchStartY);
+  if(dx>10||dy>10) return; // fue scroll, no tap
+  var btn=e.target.closest('[data-act]'),ud=e.target.closest('[data-undo]');
+  if(btn){e.preventDefault();doAct(+btn.dataset.idx,btn.dataset.act);}
+  if(ud){e.preventDefault();doUndo(+ud.dataset.undo);}
+},{passive:false});
 g('xlista').addEventListener('click',function(e){var btn=e.target.closest('[data-act]'),ud=e.target.closest('[data-undo]');if(btn)doAct(+btn.dataset.idx,btn.dataset.act);if(ud)doUndo(+ud.dataset.undo);});
 function doUndo(i){delivered[i]=false;pagos[i]=null;horas[i]=null;render();calcStats();fbSave();}
 function doAct(idx,act){
@@ -142,10 +154,21 @@ function doAct(idx,act){
 function openModal(idx){pendingIdx=idx;g('xmname').textContent=stops[idx].name;g('xmamt').textContent=fmt(stops[idx].cobrar);g('xmodal').classList.add('show');}
 function closeModal(){g('xmodal').classList.remove('show');}
 function confirmPago(tipo){var idx=pendingIdx;if(idx<0)return;closeModal();delivered[idx]=true;pagos[idx]=tipo;horas[idx]=new Date().toISOString();pendingIdx=-1;render();calcStats();fbSave();setTimeout(function(){var next=delivered.findIndex(function(d,i){return !d&&noResp[i]<99;});if(next>-1){var e=g('c'+next);if(e)e.scrollIntoView({behavior:'smooth',block:'center'});}},300);}
-['xbef','xbtar','xbpag'].forEach(function(id){var tipo=id==='xbef'?'efectivo':id==='xbtar'?'tarjeta':'pagado';g(id).addEventListener('touchstart',function(e){e.preventDefault();confirmPago(tipo);},{passive:false});g(id).addEventListener('click',function(){confirmPago(tipo);});});
-g('xbcan').addEventListener('touchstart',function(e){e.preventDefault();closeModal();},{passive:false});
+var mTouchX=0,mTouchY=0;
+['xbef','xbtar','xbpag'].forEach(function(id){
+  var tipo=id==='xbef'?'efectivo':id==='xbtar'?'tarjeta':'pagado';
+  g(id).addEventListener('touchstart',function(e){mTouchX=e.touches[0].clientX;mTouchY=e.touches[0].clientY;},{passive:true});
+  g(id).addEventListener('touchend',function(e){
+    var dx=Math.abs(e.changedTouches[0].clientX-mTouchX);
+    var dy=Math.abs(e.changedTouches[0].clientY-mTouchY);
+    if(dx>10||dy>10) return;
+    e.preventDefault();confirmPago(tipo);
+  },{passive:false});
+  g(id).addEventListener('click',function(){confirmPago(tipo);});
+});
+g('xbcan').addEventListener('touchend',function(e){e.preventDefault();closeModal();},{passive:false});
 g('xbcan').addEventListener('click',closeModal);
-g('xmodal').addEventListener('touchstart',function(e){if(e.target===this){e.preventDefault();closeModal();}},{passive:false});
+g('xmodal').addEventListener('touchend',function(e){if(e.target===this){e.preventDefault();closeModal();}},{passive:false});
 g('xmodal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 function doNoresp(idx){
   if(noResp[idx]===1){noResp[idx]=99;render();calcStats();fbSave();return;}
